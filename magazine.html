@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>📱 Puzzle Pocket Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --red: #FF6B6B;
+        --teal: #4ECDC4;
+        --yellow: #FFE66D;
+        --dark: #2d3436;
+        --white: #ffffff;
+        --bg: #f7f1e3;
+    }
+
+    * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent; /* Removes blue highlight on tap */
+    }
+
+    body {
+        font-family: 'Nunito', sans-serif;
+        background-color: var(--bg);
+        margin: 0;
+        padding: 0;
+        color: var(--dark);
+        padding-bottom: 50px;
+    }
+
+    header {
+        background: var(--red);
+        color: white;
+        padding: 20px;
+        text-align: center;
+        border-bottom-left-radius: 30px;
+        border-bottom-right-radius: 30px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    h1 {
+        font-family: 'Fredoka One', cursive;
+        font-size: 1.8rem; /* Mobile friendly size */
+        margin: 0;
+        letter-spacing: 1px;
+    }
+
+    p.subtitle {
+        margin: 5px 0 0 0;
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .container {
+        padding: 20px;
+        max-width: 600px; /* Keeps it looking good on tablets too */
+        margin: 0 auto;
+    }
+
+    h2 {
+        font-family: 'Fredoka One', cursive;
+        color: var(--teal);
+        font-size: 1.5rem;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        text-shadow: 1px 1px 0px var(--dark);
+    }
+
+    /* --- CROSSWORD SECTION --- */
+    .group-header {
+        background: var(--dark);
+        color: var(--yellow);
+        padding: 10px 15px;
+        border-radius: 10px;
+        display: inline-block;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .clue-card {
+        background: white;
+        border-radius: 15px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        border-left: 5px solid var(--teal);
+    }
+
+    .clue-text {
+        font-size: 1rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .answer-box {
+        background: #eee;
+        color: transparent; /* Hide text */
+        text-align: center;
+        padding: 12px;
+        border-radius: 8px;
+        font-family: 'Fredoka One', cursive;
+        font-size: 1.2rem;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* The Blur Effect */
+    .answer-box::after {
+        content: "TAP TO REVEAL";
+        color: #999;
+        font-size: 0.8rem;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Nunito', sans-serif;
+    }
+
+    /* Revealed State */
+    .answer-box.revealed {
+        background: var(--yellow);
+        color: var(--dark);
+        transform: scale(1.02);
+    }
+    
+    .answer-box.revealed::after {
+        display: none;
+    }
+
+    /* --- RIDDLES SECTION --- */
+    .riddle-card {
+        perspective: 1000px;
+        height: 200px;
+        margin-bottom: 20px;
+        cursor: pointer;
+    }
+
+    .riddle-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+    }
+
+    .riddle-card.flipped .riddle-inner {
+        transform: rotateY(180deg);
+    }
+
+    .riddle-front, .riddle-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        -webkit-backface-visibility: hidden; /* Safari */
+        backface-visibility: hidden;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        box-sizing: border-box;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .riddle-front {
+        background: white;
+        border: 3px solid var(--red);
+        color: var(--dark);
+    }
+
+    .riddle-back {
+        background: var(--yellow);
+        border: 3px solid var(--dark);
+        transform: rotateY(180deg);
+        font-family: 'Fredoka One', cursive;
+        font-size: 1.5rem;
+    }
+
+    .tap-hint {
+        font-size: 0.8rem;
+        color: #999;
+        margin-top: 10px;
+        font-weight: normal;
+    }
+
+    /* --- FACTS SECTION --- */
+    .fact-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .fact-item {
+        background: white;
+        padding: 15px;
+        border-radius: 15px;
+        font-weight: bold;
+        border-bottom: 4px solid rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .fact-num {
+        background: var(--teal);
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Fredoka One', cursive;
+        flex-shrink: 0;
+    }
+
+    /* Specific colors for fun */
+    .fact-item:nth-child(odd) .fact-num { background: var(--red); }
+    .fact-item:nth-child(3n) .fact-num { background: var(--yellow); color: var(--dark); }
+
+</style>
+</head>
+<body>
+
+<header>
+    <h1>🧩 Guide Pocket</h1>
+    <p class="subtitle">Tap boxes to see answers!</p>
+</header>
+
+<div class="container">
+
+    <!-- CROSSWORD SECTION -->
+    <h2>📝 Crossword Helper</h2>
+    
+    <div class="group-header">⬇️ DOWN</div>
+    
+    <div class="clue-card">
+        <div class="clue-text">1. Study of structure of living things</div>
+        <div class="answer-box" onclick="toggleAnswer(this)">BIOLOGY</div>
+    </div>
+    <div class="clue-card">
+        <div class="clue-text">3. Mountain that spews lava & ash</div>
+        <div class="answer-box" onclick="toggleAnswer(this)">VOLCANO</div>
+    </div>
+    <div class="clue-card">
+        <div class="clue-text">4. Fancy or suitable for special occasions</div>
+        <div class="answer-box" onclick="toggleAnswer(this)">FORMAL</div>
+    </div>
+    <div class="clue-card">
+        <div class="clue-text">5. Bees live here & store honey inside</div>
+        <div class="answer-box" onclick="toggleAnswer(this)">HIVE</div>
+    </div>
+    <div class="clue-card">
+        <div class="clue-text">6. Small fish with a horse head</div>
+        <div class="answer-box" onclick="toggleAnswer(this)">SEAHORSE</div>
+    </div>
+    <div class="clue-card">
+        <div class="clue-text">7. Birds that dive to catch fish (Plural)</div>
+        <div class="answer-box" onclick="toggleAnswer(this)">OSPREYS</div>
+    </div>
+
+    <div class="group-header" style="background: var(--teal); margin-top: 20px;">➡️ ACROSS</div>
+    
+    <div class="clue-card" style="border-left-color: var(--red);">
+        <div class="clue-text">2. Yellow curved fruit. Monkeys favorite</div>
+        <div class="answer-box" onclick="toggleAnswer(this)">BANANA</div>
+    </div>
+    <div class="clue-card" style="border-left-color: var(--red);">
+        <div class="clue-text">3. Soft covering birds have</div>
+        <div class="answer-box" onclick="toggleAnswer(this)">FEATHERS</div>
+    </div>
+    <div class="clue-card" style="border-left-color: var(--red);">
+        <div class="clue-text">5. Short word used to refuse</div>
+        <div class="answer-box" onclick="toggleAnswer(this)">NO</div>
+    </div>
+    <div class="clue-card" style="border-left-color: var(--red);">
+        <div class="clue-text">6. Sea creature: 3 hearts, 8 hands</div>
+        <div class="answer-box" onclick="toggleAnswer(this)">OCTOPUS</div>
+    </div>
+    <div class="clue-card" style="border-left-color: var(--red);">
+        <div class="clue-text">8. Migrating butterflies</div>
+        <div class="answer-box" onclick="toggleAnswer(this)">MONARCH</div>
+    </div>
+    <div class="clue-card" style="border-left-color: var(--red);">
+        <div class="clue-text">9. Golden sweet spread in jars</div>
+        <div class="answer-box" onclick="toggleAnswer(this)">HONEY</div>
+    </div>
+
+
+    <!-- RIDDLES SECTION -->
+    <h2>🔮 Riddles (Tap Card)</h2>
+
+    <!-- Riddle 1 -->
+    <div class="riddle-card" onclick="this.classList.toggle('flipped')">
+        <div class="riddle-inner">
+            <div class="riddle-front">
+                <div style="font-size:3rem;">🕯️</div>
+                <p><strong>I’m tall when I’m young, and short when I am old.</strong></p>
+                <div class="tap-hint">Tap to Flip</div>
+            </div>
+            <div class="riddle-back">
+                A CANDLE!
+            </div>
+        </div>
+    </div>
+
+    <!-- Riddle 2 -->
+    <div class="riddle-card" onclick="this.classList.toggle('flipped')">
+        <div class="riddle-inner">
+            <div class="riddle-front">
+                <div style="font-size:3rem;">👣</div>
+                <p><strong>The more of me you take, the more you leave behind.</strong></p>
+                <div class="tap-hint">Tap to Flip</div>
+            </div>
+            <div class="riddle-back">
+                FOOTSTEPS!
+            </div>
+        </div>
+    </div>
+
+    <!-- Riddle 3 -->
+    <div class="riddle-card" onclick="this.classList.toggle('flipped')">
+        <div class="riddle-inner">
+            <div class="riddle-front">
+                <div style="font-size:3rem;">⌨️</div>
+                <p><strong>I have keys but no locks, space but no rooms, enter but can't go out.</strong></p>
+                <div class="tap-hint">Tap to Flip</div>
+            </div>
+            <div class="riddle-back">
+                A KEYBOARD!
+            </div>
+        </div>
+    </div>
+
+
+    <!-- FUN FACTS SECTION -->
+    <h2>🎓 Fun Facts</h2>
+    <div class="fact-list">
+        <div class="fact-item"><div class="fact-num">1</div>Honey never spoils 🍯</div>
+        <div class="fact-item"><div class="fact-num">2</div>Moon has Moonquakes 🌑</div>
+        <div class="fact-item"><div class="fact-num">3</div>Owls can't move their eyes 🦉</div>
+        <div class="fact-item"><div class="fact-num">4</div>Grapes explode in microwave 🍇</div>
+        <div class="fact-item"><div class="fact-num">5</div>Butterflies taste with feet 🦋</div>
+        <div class="fact-item"><div class="fact-num">6</div>Bees remember human faces 🐝</div>
+        <div class="fact-item"><div class="fact-num">7</div>Popcorn invented 5k years ago 🍿</div>
+        <div class="fact-item"><div class="fact-num">8</div>First mobile weighed 1kg 📱</div>
+        <div class="fact-item"><div class="fact-num">9</div>Sharks older than trees 🦈</div>
+        <div class="fact-item"><div class="fact-num">10</div>Foxes hunt via magnetic fields 🦊</div>
+        <div class="fact-item"><div class="fact-num">11</div>Penguins propose with pebbles 🐧</div>
+        <div class="fact-item"><div class="fact-num">12</div>Dolphins have names (whistles) 🐬</div>
+        <div class="fact-item"><div class="fact-num">13</div>Brain grows until age 25 🧠</div>
+        <div class="fact-item"><div class="fact-num">14</div>A cloud weighs 1M kg ☁️</div>
+        <div class="fact-item"><div class="fact-num">15</div>Lightning 5x hotter than Sun ⚡</div>
+    </div>
+
+</div>
+
+<script>
+    function toggleAnswer(element) {
+        // Toggles the 'revealed' class on the clicked box
+        element.classList.toggle('revealed');
+    }
+</script>
+
+</body>
+</html>
